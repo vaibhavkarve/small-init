@@ -1,0 +1,7 @@
+# Folders
+auto-save-list/
+eln-cache/
+
+# File regex
+*.eld
+*.*~
