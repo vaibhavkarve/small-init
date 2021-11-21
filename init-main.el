@@ -79,7 +79,7 @@
 
 ;; Make M-x and other mini-buffers sortable, filterable
 (use-package ivy
-  :init
+  :config
   (ivy-mode 1)
   (setq ivy-height 15
         ivy-use-virtual-buffers t
@@ -90,6 +90,10 @@
   :init
   (counsel-mode 1)
   :bind (:map ivy-minibuffer-map))
+
+(use-package swiper
+  :config
+  (global-set-key "\C-s" 'swiper))
 
 ;;; Projectile
 ;;  ==========
