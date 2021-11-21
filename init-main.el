@@ -149,6 +149,12 @@
 
 (use-package magit)
 
+(use-package delight
+  :config
+  (delight '((abbrev-mode nil)
+	     (eldoc-mode nil)
+	     (emacs-lisp-mode "Elisp" :major)
+	     (auto-revert-mode "arev"))))
 
 
 (message (format "Finished loading %s" (f-this-file)))
