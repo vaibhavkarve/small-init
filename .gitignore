@@ -1,6 +1,7 @@
 # Folders
 auto-save-list/
 eln-cache/
+elpa/
 
 # File regex
 *.eld
