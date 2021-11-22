@@ -41,6 +41,17 @@
   :config
   (exec-path-from-shell-initialize))
 
+;;; Make Emacs aware of the system we are on
+;;  ========================================
+
+;; `f.el' is a modern API for working with files and directories in
+;; Emacs.
+(use-package f)
+(defconst vk-home "/home/vaibhav")
+(defconst vk-emacs-dir (f-join vk-home "/" ".emacs.d"))
+(defconst vk-org-dir (f-join vk-home "/" "org"))
+(defconst vk-gtd (f-join vk-org-dir "/" "gtd.org"))
+
 
 ;;; Theme and minimal UI
 ;;  ====================
