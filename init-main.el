@@ -60,6 +60,13 @@
   (load-theme 'doom-one t))
 (use-package monokai-theme)
 
+(use-package delight
+  :config
+  (delight '((abbrev-mode nil)
+	     (eldoc-mode nil)
+	     (emacs-lisp-mode "Elisp" :major)
+	     (auto-revert-mode "arev"))))
+
 
 ;; Any Customize-based settings should live in custom.el, not here.
 (setq custom-file "~/.emacs.d/custom.el") ;; Without this emacs will dump generated custom settings in this file. No bueno.
