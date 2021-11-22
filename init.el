@@ -15,33 +15,29 @@
 ;;  =====
 
 (defconst vk-init-file load-file-name
-  "The name of this init file.
-
-This value will be used to define a function for opening the init
-file interactively.")
+  "The name of this init file, can be opened using `vk-open-init-file'.")
 (defun vk-open-init-file ()
   "Open the file stored in variable `vk-init-file'."
   (interactive)
-  (find-file vk-init-file)
-  )
+  (find-file vk-init-file))
 
 ;; Set to true if we want to debug the init. Otherwise set to nil.
 (setq debug-on-error nil)
 
 
-(load-file "~/emacs/init-main.el")  ;; The bare minimum Emacs config I need.
+(load-file "~/.emacs.d/init-main.el")  ;; The bare minimum Emacs config I need.
 
 ;; Everything else is optional and should be commented out if the file is
 ;; missing or not needed.
-;;(load-file "~/emacs/init-org-roam.el")  ;; Set up org-roam for atomic note-taking.
-;;(load-file "~/emacs/init-utils.el") ;; Utility functions defined by me.
-;; (load-file "~/emacs/init-lean.el") ;; Set up for the lean theorem prover.
+;;(load-file "~/.emacs.d/init-org-roam.el")  ;; Set up org-roam for atomic note-taking.
+;;(load-file "~/.emacs.d/init-utils.el") ;; Utility functions defined by me.
+;; (load-file "~/.emacs.d/init-lean.el") ;; Set up for the lean theorem prover.
 
 ;; It is hard to ever stop customizing Emacs. I put all my "experimental"
 ;; code in the following init. This file is not guaranteed to always be in
 ;; a stable form.
 
-;; (load-file "~/emacs/init-experimental.el")
+;; (load-file "~/.emacs.d/init-experimental.el")
 
 
 
