@@ -58,6 +58,7 @@
 (use-package doom-themes
   :init
   (load-theme 'doom-one t))
+(use-package monokai-theme)
 
 
 ;; Any Customize-based settings should live in custom.el, not here.
