@@ -8,38 +8,35 @@
 ;; I want to keep this file as minimal as possible. It is important
 ;; that this file remain self-contained.
 
+;; Refer to the old lit file for copying code.
+;; ~/projects/old_emacs_init/lit-init.org
+
 ;;; Code:
 ;;  =====
 
 (require 'package)
 
-;; Set up emacs package archives with 'package
-;; Main package archive
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-;; Some packages might only do stable releases?
-(add-to-list 'package-archives
-	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-;; Org packages, I don't use org but seems like a harmless default
-(add-to-list 'package-archives
-             '("org-elpa" . "https://orgmode.org/elpa/") t)
+(setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+	("nongnu" . "https://elpa.nongnu.org/nongnu/")
+	("melpa" . "http://melpa.org/packages/")
+	("melpa-stable" . "http://stable.melpa.org/packages/")
+	("org-elpa" . "https://orgmode.org/elpa/")))
+
+;; Bootstrap use-package.
 (package-initialize)
-
-;; Ensure use-package is present. From here on out, all packages are
-;; loaded with use-package, a macro for importing and installing
-;; packages. Also, refresh the package archive on load so we can pull
-;; the latest packages.
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
+(package-refresh-contents)
+(package-install 'use-package)
 (require 'use-package)
+(setq package-check-signature nil)
 (setq
- use-package-always-ensure t ;; Makes sure to download new packages if they aren't already downloaded
- use-package-verbose t) ;; Package install logging. Packages break, it's nice to know why.
+ ;; Makes sure to download new packages if they aren't already downloaded
+ use-package-always-ensure t
+ ;; Package install logging. Packages break, it's nice to know why.
+ use-package-verbose t)
 
-;; Slurp environment variables from the shell.
-;; a.k.a. The Most Asked Question On r/emacs
+;; Slurp environment variables from the shell.  a.k.a. The Most Asked
+;; Question On r/emacs
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
