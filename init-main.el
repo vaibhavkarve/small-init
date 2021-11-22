@@ -117,11 +117,12 @@
    "Keep it at value 'emacs' and use Emacs's 'completion-styles instead."))
 (setq completion-styles '('flex))
 
-(use-package counsel
-  :after ivy
-  :init
-  (counsel-mode 1)
-  :bind (:map ivy-minibuffer-map))
+(use-package which-key
+   :config
+   (setq which-key-separator " "
+         which-key-prefix-prefix "+")
+   (which-key-mode t))
+
 
 (use-package swiper
   :config
