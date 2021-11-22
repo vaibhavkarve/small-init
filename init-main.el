@@ -57,7 +57,7 @@
 ;;  ====================
 (use-package doom-themes
   :init
-  (load-theme 'doom-one))
+  (load-theme 'doom-one t))
 
 
 ;; Any Customize-based settings should live in custom.el, not here.
