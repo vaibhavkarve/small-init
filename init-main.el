@@ -173,11 +173,7 @@
 
 ;; Package for interacting with language servers
 (use-package lsp-mode
-  :commands lsp
-  :config
-  (setq lsp-prefer-flymake nil ;; Flymake is outdated
-        lsp-headerline-breadcrumb-mode nil)) ;; I don't like the symbols on the header a-la-vscode, remove this if you like them.
-
+  :commands lsp)
 
 (use-package magit)
 
