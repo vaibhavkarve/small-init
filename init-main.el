@@ -128,22 +128,26 @@
   :config
   (global-set-key "\C-s" 'swiper))
 
-;;; Projectile
-;;  ==========
+;;; Project management and Version control
+;;  ======================================
 
 ;; We need something to manage the various projects we work on
 ;; and for common functionality like project-wide searching, fuzzy file finding etc.
 (use-package projectile
-  :init
-  (projectile-mode t) ;; Enable this immediately
+  :diminish "proj"
   :config
+  (projectile-mode t) ;; Enable this immediately
   (setq projectile-enable-caching t ;; Much better performance on large projects
-        projectile-completion-system 'ivy)) ;; Ideally the minibuffer should aways look similar
+        projectile-completion-system 'helm ;; Ideally the minibuffer should aways look similar
+        projectile-require-project-root nil)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 ;; Counsel and projectile should work together.
 (use-package counsel-projectile
   :init
   (counsel-projectile-mode))
+
+(use-package magit)
 
 
 ;;; Company
