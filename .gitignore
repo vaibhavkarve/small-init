@@ -2,7 +2,11 @@
 auto-save-list/
 eln-cache/
 elpa/
+transient/
 
 # File regex
 *.eld
 *.*~
+
+# Specific files
+recentf
