@@ -150,25 +150,21 @@
 (use-package magit)
 
 
-;;; Company
-;;  =======
+;;; Code completion
+;;  ===============
 
-;; Company is the best Emacs completion system.
 (use-package company
-  :bind (("C-." . company-complete))
+  :delight ""
   :custom
-  (company-idle-delay 0) ;; I always want completion, give it to me asap
-  (company-dabbrev-downcase nil "Don't downcase returned candidates.")
-  (company-show-numbers t "Numbers are helpful.")
-  (company-tooltip-limit 10 "The more the merrier.")
+  (company-idle-delay 0)
+  (company-dabbrev-downcase nil)
+  (company-minimum-prefix-length 1)
+  (company-selection-wrap-around t)
+  (company-show-numbers nil)
+  (company-tooltip-limit 10)
   :config
-  (global-company-mode) ;; We want completion everywhere
+  (global-company-mode 1))
 
-  ;; use numbers 0-9 to select company completion candidates
-  (let ((map company-active-map))
-    (mapc (lambda (x) (define-key map (format "%d" x)
-                        `(lambda () (interactive) (company-complete-number ,x))))
-          (number-sequence 0 9))))
 
 ;; Flycheck is the newer version of flymake and is needed to make lsp-mode not freak out.
 (use-package flycheck
@@ -180,14 +176,6 @@
 (use-package lsp-mode
   :commands lsp)
 
-(use-package magit)
-
-(use-package delight
-  :config
-  (delight '((abbrev-mode nil)
-	     (eldoc-mode nil)
-	     (emacs-lisp-mode "Elisp" :major)
-	     (auto-revert-mode "arev"))))
 
 
 (message (format "Finished loading %s" (f-this-file)))
