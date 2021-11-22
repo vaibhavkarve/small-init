@@ -93,13 +93,29 @@
 ;;; Completion
 ;;  ==========
 
-;; Make M-x and other mini-buffers sortable, filterable
-(use-package ivy
+;; Helm is Emac's incremental completion and selection narrowing
+;; framework. helm-M-x gives us a popup of options for selecting
+;; functions via M-x.
+(use-package helm
   :config
-  (ivy-mode 1)
-  (setq ivy-height 15
-        ivy-use-virtual-buffers t
-        ivy-use-selectable-prompt t))
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (helm-mode 1)
+  (setq
+   ;; open helm buffer inside current window, not occupy whole other window
+   helm-split-window-inside-p t
+   ;; move to end or beginning of source when reaching top or bottom of source.
+   helm-move-to-line-cycle-in-source t
+   helm-echo-input-in-header-line t
+   helm-buffers-fuzzy-matching t
+   helm-recentf-fuzzy-match t
+   helm-locate-fuzzy-match t
+   helm-imenu-fuzzy-match t
+   helm-candidate-number-limit 150)
+  (customize-set-variable
+   helm-completion-style 'emacs
+   "Keep it at value 'emacs' and use Emacs's 'completion-styles instead."))
+(setq completion-styles '('flex))
 
 (use-package counsel
   :after ivy
