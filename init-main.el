@@ -198,10 +198,21 @@
   (add-hook 'prog-mode-hook 'flycheck-mode) ;; always lint my code
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
-;; Package for interacting with language servers
+;; Support for Language Server Protocol. This is what will give us
+;; IDE-like functionality for programming in any language with a
+;; supported lsp-mode. This mode comes packaged with flymake (for
+;; compilation, though this is obsolete) and `completion-at-point'
+;; (which will serve as a backed for `company'-driven completion).
 (use-package lsp-mode
   :commands lsp)
-
+;; This package contains all the higher level UI modules of lsp-mode,
+;; like flycheck support and code lenses.
+(use-package lsp-ui)
+;; Add support for python-lsp.
+(use-package lsp-pyright
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))  ;; or lsp-deferred
 
 
 (message (format "Finished loading %s" (f-this-file)))
