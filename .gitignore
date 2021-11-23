@@ -3,10 +3,13 @@ auto-save-list/
 eln-cache/
 elpa/
 transient/
+.cache/
+url/
 
 # File regex
 *.eld
 *.*~
+.lsp*
 
 # Specific files
 recentf
