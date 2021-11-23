@@ -89,6 +89,13 @@
 (when *is-a-linux*
   (setq x-super-keysym 'meta))
 
+(defun vk-show-path-environment-variable ()
+  "Return the value of $PATH environment variable."
+  (interactive)
+  (let ((path-var (exec-path-from-shell-getenv "PATH")))
+    (string-replace ":" "\n" path-var)))
+
+
 ;; Fullscreen by default, as early as possible. This tiny window is not enough
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
