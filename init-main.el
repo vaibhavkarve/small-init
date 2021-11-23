@@ -103,6 +103,22 @@
 ;;; Completion
 ;;  ==========
 
+;; This creates a dropdown menu with completion options.
+(use-package company
+  :delight ""
+  :custom
+  (company-idle-delay 0 "Show dropdown immediately.")
+  (company-dabbrev-downcase nil "Don't downcase everything that is completed.")
+  (company-minimum-prefix-length 1 "Single character will trigger the dropdown.")
+  (company-selection-wrap-around t "Dropdown menu wrap around top and bottom.")
+  (company-show-numbers nil "I don't need the numbers.")
+  (company-tooltip-limit 10 "Show me as many options as possible at a time.")
+  (company-format-margin-function nil "Disable margin icon in dropdown.")
+  (company-tooltip-width-grow-only t "Tooltip width monotonically increases.")
+  :config
+  (global-company-mode 1))
+
+
 ;; Helm is Emac's incremental completion and selection narrowing
 ;; framework. helm-M-x gives us a popup of options for selecting
 ;; functions via M-x.
@@ -162,18 +178,6 @@
 
 ;;; Code completion
 ;;  ===============
-
-(use-package company
-  :delight ""
-  :custom
-  (company-idle-delay 0)
-  (company-dabbrev-downcase nil)
-  (company-minimum-prefix-length 1)
-  (company-selection-wrap-around t)
-  (company-show-numbers nil)
-  (company-tooltip-limit 10)
-  :config
-  (global-company-mode 1))
 
 
 ;; Flycheck is the newer version of flymake and is needed to make lsp-mode not freak out.
