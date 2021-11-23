@@ -141,7 +141,9 @@
   (customize-set-variable
    helm-completion-style 'emacs
    "Keep it at value 'emacs' and use Emacs's 'completion-styles instead."))
-(setq completion-styles '('flex))
+(setq completion-styles '(flex))
+
+
 
 (use-package which-key
    :config
