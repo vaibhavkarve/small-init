@@ -156,6 +156,16 @@
   :config
   (global-set-key "\C-s" 'swiper))
 
+;; We first load support for expanding, editing, and adding new code snippets.
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
+;; Then we load the standard collection of snippets.
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+
+
 ;;; Project management and Version control
 ;;  ======================================
 
