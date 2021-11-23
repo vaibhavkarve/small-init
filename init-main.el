@@ -25,16 +25,19 @@
 
 ;; Bootstrap use-package.
 (package-initialize)
-(package-refresh-contents)
-(package-install 'use-package)
-(require 'use-package)
-(setq package-check-signature nil)
-(setq
- ;; Makes sure to download new packages if they aren't already downloaded
- use-package-always-ensure t
- ;; Package install logging. Packages break, it's nice to know why.
- use-package-verbose t)
 
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (setq
+   ;; Makes sure to download new packages if they aren't already downloaded
+   use-package-always-ensure t
+    ;; Package install logging. Packages break, it's nice to know why.
+   use-package-verbose t
+   use-package-expand-minimally t
+   package-check-signature nil))
+ 
 ;; Slurp environment variables from the shell.  a.k.a. The Most Asked
 ;; Question On r/emacs
 (use-package exec-path-from-shell
