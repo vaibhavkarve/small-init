@@ -219,6 +219,22 @@
                          (lsp))))  ;; or lsp-deferred
 
 
+;;; Text Editing
+;;  ============
+(use-package iedit)
+(setq fill-column 75)
+(setq sentence-end-double-space nil)
+(setq show-paren-delay 0)
+(show-paren-mode t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; In order to delete text when we select a region and hit backspace/delete.
+(delete-selection-mode t)
+
+
+
+;; I rarely open PDFs in Emacs. But when I do, I want them to be in
+;; continuous viewing mode.
+(setq doc-view-continuous t)
 (message (format "Finished loading %s" (f-this-file)))
 (provide 'init-main.el)
 ;;; init-main.el ends here
