@@ -208,7 +208,11 @@
 ;; compilation, though this is obsolete) and `completion-at-point'
 ;; (which will serve as a backed for `company'-driven completion).
 (use-package lsp-mode
-  :commands lsp)
+  :commands lsp
+  :custom
+  (gc-cons-threshold 100000000) ;; Setting it to 100MB
+  (read-process-output-max (* 1024 1024))) ;; Setting it to 1MB
+
 ;; This package contains all the higher level UI modules of lsp-mode,
 ;; like flycheck support and code lenses.
 (use-package lsp-ui)
@@ -235,6 +239,7 @@
 ;; I rarely open PDFs in Emacs. But when I do, I want them to be in
 ;; continuous viewing mode.
 (setq doc-view-continuous t)
+
 (message (format "Finished loading %s" (f-this-file)))
 (provide 'init-main.el)
 ;;; init-main.el ends here
