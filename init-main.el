@@ -66,9 +66,11 @@
 (use-package delight
   :config
   (delight '((abbrev-mode nil)
-	     (eldoc-mode nil)
+	     (eldoc-mode nil "eldoc")
 	     (emacs-lisp-mode "Elisp" :major)
-	     (auto-revert-mode "arev"))))
+	     (auto-revert-mode " arev" "autorevert"))))
+
+
 
 
 ;; Any Customize-based settings should live in custom.el, not here.
@@ -123,6 +125,7 @@
 ;; framework. helm-M-x gives us a popup of options for selecting
 ;; functions via M-x.
 (use-package helm
+  :delight
   :config
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
@@ -172,7 +175,7 @@
 ;; We need something to manage the various projects we work on
 ;; and for common functionality like project-wide searching, fuzzy file finding etc.
 (use-package projectile
-  :diminish "proj"
+  :delight " proj"
   :config
   (projectile-mode t) ;; Enable this immediately
   (setq projectile-enable-caching t ;; Much better performance on large projects
@@ -194,6 +197,7 @@
 
 ;; Flycheck is the newer version of flymake and is needed to make lsp-mode not freak out.
 (use-package flycheck
+  :delight " flyc"
   :config
   (add-hook 'prog-mode-hook 'flycheck-mode) ;; always lint my code
   (add-hook 'after-init-hook #'global-flycheck-mode))
