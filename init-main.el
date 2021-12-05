@@ -101,6 +101,30 @@
 ;; Fullscreen by default, as early as possible. This tiny window is not enough
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+(scroll-bar-mode 0)
+(tool-bar-mode 0)
+(tooltip-mode 0)
+(menu-bar-mode 0)
+(fset 'yes-or-no-p 'y-or-n-p)
+(column-number-mode 1)
+(display-battery-mode 1)
+(global-hl-line-mode 1)
+(setq inhibit-startup-screen t
+      initial-buffer-choice vk-gtd
+      scroll-step 1)
+;; Disable global linum but enable line numbers. The latter is faster
+;; than the former.
+(global-linum-mode 0)
+(global-display-line-numbers-mode 1)
+;; When switching to a new buffer, use beacon-mode to light up the
+;; curson line. This way we know where the position is immediately.
+;; This is a global minor-mode.
+(use-package beacon
+  :delight
+  :config
+  (beacon-mode 1))
+
+
 
 ;;; Completion
 ;;  ==========
