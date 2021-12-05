@@ -149,11 +149,11 @@
 
 
 (use-package which-key
-   :config
-   (setq which-key-separator " "
-         which-key-prefix-prefix "+")
-   (which-key-mode t))
-
+  :delight
+  :config
+  (setq which-key-separator " "
+        which-key-prefix-prefix "+")
+  (which-key-mode t))
 
 (use-package swiper
   :config
