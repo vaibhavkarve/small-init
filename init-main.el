@@ -37,7 +37,7 @@
    use-package-verbose t
    use-package-expand-minimally t
    package-check-signature nil))
- 
+
 ;; Slurp environment variables from the shell.  a.k.a. The Most Asked
 ;; Question On r/emacs
 (use-package exec-path-from-shell
@@ -50,10 +50,96 @@
 ;; `f.el' is a modern API for working with files and directories in
 ;; Emacs.
 (use-package f)
-(defconst vk-home "/home/vaibhav")
-(defconst vk-emacs-dir (f-join vk-home "/" ".emacs.d"))
-(defconst vk-org-dir (f-join vk-home "/" "org"))
-(defconst vk-gtd (f-join vk-org-dir "/" "gtd.org"))
+(defconst vk-home "/home/vaibhav" "Home directory.")
+(defconst vk-emacs-dir (f-join vk-home ".emacs.d"))
+(defconst vk-org-dir (f-join vk-home "org"))
+(defconst vk-gtd (f-join vk-org-dir "gtd.org"))
+(defconst vk-journal-dir (f-join vk-org-dir "journal"))
+(defconst vk-roam-dir (f-join vk-org-dir "roam"))
+
+
+;;; Org-mode settings
+;;  =================
+;; TODO: set up org-indent mode.
+
+;; `org-tempo' helps with insertion of org structure templates, i.e.
+;; code blocks inside org-mode. These templates are stored in
+;; `org-structure-template-alist'.
+(use-package org-tempo)
+;; To enable shift-selection of text in org-mode, we enable the following.
+(setq org-support-shift-select t)
+;; Enable `org-indent-mode' for hiding "***" in deep org headlines.
+(add-hook 'org-mode-hook 'org-indent-mode)
+;; Default list of org todo keywords.
+(setq org-todo-keywords
+      '((sequence "NEXT(n)" "PROG(p)" "ZERO(z)" "REVIEW(r)" "WAITING(w)" "|" "DONE(d)")))
+
+;; Below I set up my org-agenda.
+(setq org-agenda-file-regexp (rx string-start (+ ascii) ".org" string-end))
+(setq org-agenda-files (list vk-org-dir))
+(setq org-journal-dir vk-journal-dir)
+(setq org-stuck-projects
+      (quote
+       ("+LEVEL=1/-DONE"
+        ("TODO" "NEXT" "PROG" "ZERO")
+        ("nonstuck")
+        "----")))
+(use-package org-super-agenda
+  :custom
+  (org-agenda-span 'week)
+  (org-agenda-custom-commands
+   '(("V" "Vaibhav's Super Agenda"
+      ((agenda "" ((org-agenda-span 'day)
+		   (org-agenda-skip-scheduled-if-done t)))
+       ;;(stuck "" ((org-agenda-overriding-header "Stuck projects")))
+       (alltodo "" ((org-agenda-overriding-header "")
+                    (org-super-agenda-groups
+  		     '((:name "Projects"
+			      :children t)
+		       (:name "Ongoing..."
+		         :todo "PROG")
+		      (:name "Important..."
+		             :priority>= "C")
+		      ;;(:auto-planning)
+		      (:name "Next in line..."
+		       :and (:todo "NEXT"
+		             :not (:tag "recurring"
+				   :scheduled t)))
+		      (:name "Review these..."
+		        	    :todo "REVIEW")
+		      (:name "Zero energy tasks"
+			     :todo "ZERO")))))
+      ))))
+  :config
+  (org-super-agenda-mode t)
+  (org-agenda nil "V"))
+
+;; Default target for storing notes from `org-capture'.
+(setq org-default-notes-file vk-gtd)
+;; Customized view for the daily workflow.
+(setq org-agenda-custom-commands
+      '(("c" "Daily agenda + PROG + NEXT + REVIEW + ZERO"
+         ((agenda "" nil)
+          (todo "PROG" nil)
+          (todo "NEXT" nil)
+          (todo "REVIEW" nil)
+          (todo "ZERO" nil))
+         nil)))
+
+;; Always include the diary in the agenda view.
+;; Diary file can be viewed using the new function diary-open.
+(setq org-agenda-include-diary t)
+(setq diary-number-of-entries 10)
+(defalias 'diary-open 'diary-show-all-entries "an alias to quickly open and edit the diary file.")
+
+
+;; I use org-roam for managing my personal notes.
+(use-package org-roam
+  :custom
+  (org-roam-db-location "~/org/org-roam-db")
+  (org-roam-directory vk-roam-dir)
+  :config
+  (org-roam-db-autosync-mode 1))
 
 
 ;;; Theme and minimal UI
@@ -68,7 +154,7 @@
   (delight '((abbrev-mode nil)
 	     (eldoc-mode nil "eldoc")
 	     (emacs-lisp-mode "Elisp" :major)
-	     (auto-revert-mode " arev" "autorevert"))))
+	     (auto-revert-mode " ar" "autorevert"))))
 
 
 
@@ -124,6 +210,13 @@
   :config
   (beacon-mode 1))
 
+;; Golden-ratio allows for dynamic resizing of window sizes.
+(use-package golden-ratio
+  :delight " g"
+  :config
+  (golden-ratio-mode 1))
+
+(use-package neotree)
 
 
 ;;; Completion
@@ -137,7 +230,7 @@
   (company-dabbrev-downcase nil "Don't downcase everything that is completed.")
   (company-minimum-prefix-length 1 "Single character will trigger the dropdown.")
   (company-selection-wrap-around t "Dropdown menu wrap around top and bottom.")
-  (company-show-numbers nil "I don't need the numbers.")
+  (company-show-quick-access nil nil nil "I don't need the numbers.")
   (company-tooltip-limit 10 "Show me as many options as possible at a time.")
   (company-format-margin-function nil "Disable margin icon in dropdown.")
   (company-tooltip-width-grow-only t "Tooltip width monotonically increases.")
@@ -196,6 +289,16 @@
 ;;; Project management and Version control
 ;;  ======================================
 
+;; Use dired for all file-level operations. `dired-dwim-target' is
+;; useful for copying files from one folder to another. Go to dired,
+;; split your window, split-window-vertically & go to another dired
+; directory. When you will press C to copy, the other dir in the split
+; pane will be the default destination.
+(use-package dired
+  :custom
+  (dired-dwim-target t "Useful for copying files from one folder to another."))
+
+
 ;; We need something to manage the various projects we work on
 ;; and for common functionality like project-wide searching, fuzzy file finding etc.
 (use-package projectile
@@ -221,7 +324,7 @@
 
 ;; Flycheck is the newer version of flymake and is needed to make lsp-mode not freak out.
 (use-package flycheck
-  :delight " flyc"
+  :delight " fc"
   :config
   (add-hook 'prog-mode-hook 'flycheck-mode) ;; always lint my code
   (add-hook 'after-init-hook #'global-flycheck-mode))
@@ -246,6 +349,11 @@
                          (require 'lsp-pyright)
                          (lsp))))  ;; or lsp-deferred
 
+;; `pyvenv' is a simple global minor mode which will replicate the
+;; changes done by virtualenv activation inside Emacs. Use this for
+;; python virtual or conda environments.
+(use-package pyvenv)
+
 
 ;;; Text Editing
 ;;  ============
@@ -263,6 +371,27 @@
 ;; I rarely open PDFs in Emacs. But when I do, I want them to be in
 ;; continuous viewing mode.
 (setq doc-view-continuous t)
+
+
+
+
+;;; TODO
+;;  ====
+
+;; undo-tree
+;; neotree
+;; all-the-icons
+;; which-key
+;; org-journal
+;; org-capture
+;; org-roam
+;; pytest
+;; unicode-fonts
+;; lean-mode
+;; monokai-theme
+;; smartparens
+;; use-package (can use :custom and :bind to cleanup stuff).
+
 
 (message (format "Finished loading %s" (f-this-file)))
 (provide 'init-main.el)

@@ -30,7 +30,7 @@
 ;; Everything else is optional and should be commented out if the file is
 ;; missing or not needed.
 ;;(load-file "~/.emacs.d/init-org-roam.el")  ;; Set up org-roam for atomic note-taking.
-;;(load-file "~/.emacs.d/init-utils.el") ;; Utility functions defined by me.
+(load-file "~/.emacs.d/init-utils.el") ;; Utility functions defined by me.
 ;; (load-file "~/.emacs.d/init-lean.el") ;; Set up for the lean theorem prover.
 
 ;; It is hard to ever stop customizing Emacs. I put all my "experimental"
@@ -45,3 +45,4 @@
 (message (format "Finished loading %s" (f-this-file)))
 (provide 'init.el)
 ;;; init.el ends here
+(put 'narrow-to-region 'disabled nil)
