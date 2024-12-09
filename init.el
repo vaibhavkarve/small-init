@@ -14,7 +14,7 @@
 ;;; Code:
 ;;  =====
 
-(defconst vk-init-file load-file-name
+(defconst vk-init-file "~/.emacs.d/init-main.el"
   "The name of this init file, can be opened using `vk-open-init-file'.")
 (defun vk-open-init-file ()
   "Open the file stored in variable `vk-init-file'."
@@ -38,11 +38,26 @@
 ;; a stable form.
 
 ;; (load-file "~/.emacs.d/init-experimental.el")
-
+(load-file "~/.emacs.d/imenu-list.el")
 
 
 
 (message (format "Finished loading %s" (f-this-file)))
 (provide 'init.el)
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("/Users/vaibhav/org/blufor.org" "/Users/vaibhav/org/gtd.org" "/Users/vaibhav/org/notes.org" "/Users/vaibhav/org/object_oriented_principles.org" "/Users/vaibhav/org/purplefor.org" "/Users/vaibhav/org/purplefor_todos.org" "/Users/vaibhav/org/ref.org")))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
