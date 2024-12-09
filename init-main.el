@@ -88,11 +88,6 @@
       '((sequence "NEXT(n)" "PROG(p)" "ZERO(z)" "REVIEW(r)" "WAITING(w)" "|" "DONE(d)")))
 
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- (quote (
-         ;; ...
-         (powershell . t))))
 
 (setq package-selected-packages
       '(doom-themes
@@ -146,6 +141,9 @@
   (interactive)
   (let ((path-var (exec-path-from-shell-getenv "PATH")))
     (print (s-split ":" path-var))))
+
+(use-package exec-path-from-shell
+   :config (exec-path-from-shell-initialize))
 
 
 ;; Fullscreen by default, as early as possible. This tiny window is not enough
@@ -506,6 +504,13 @@
 (use-package envrc
   :config (envrc-global-mode))
 
+(require 'eglot)
+(add-hook 'python-mode 'eglot-ensure)
+(add-hook 'python-ts-mode 'eglot-ensure)
+;; Manuall specify the LSP server that Eglot is supposed to use.
+(add-to-list 'eglot-server-programs
+	     '(python-ts-mode . ("pyright")))
+
 ;; To remove the lag from eglot.
 (setq eglot-events-buffer-size 0)
 
@@ -523,20 +528,17 @@
 
 
 ;; GitHub Copilot (using quelpa)
+(setq copilot-node-executable "/Users/vaibhav/.nvm/versions/node/v22.12.0/bin/node")
 (use-package copilot
   :quelpa (copilot :fetcher github
                    :repo "copilot-emacs/copilot.el"
                    :branch "main"
-                   :files ("dist" "*.el"))
+                   :files ("*.el"))
   :custom
   (copilot-indent-offset-warning-disable t))
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-
-;; Manuall specify the LSP server that Eglot is supposed to use.
-(add-to-list 'eglot-server-programs
-	     '(python-ts-mode . ("pyright")))
 
 ;;; TODO
 ;;  ====

@@ -129,7 +129,6 @@
  '(jq-indent-offset 0)
  '(lsp-pylsp-plugins-pylint-enabled nil)
  '(lsp-pyright-venv-directory "\"~/miniconda3/envs/\"")
- '(magit-delta-delta-args '("--max-line-distance" "0.6" "--color-only"))
  '(magit-diff-highlight-hunk-body nil)
  '(magit-diff-highlight-trailing nil)
  '(mailcap-user-mime-data '(("open" "*" nil)))
@@ -169,9 +168,3 @@
  '(venv-location "/Users/vaibhav/.venvs/")
  '(warning-suppress-log-types '((comp) (comp)))
  '(warning-suppress-types '((comp))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :extend nil :stipple nil :background "#282c34" :foreground "#bbc2cf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 150 :width normal :foundry "nil" :family "Fira Code")))))
