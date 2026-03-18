@@ -56,6 +56,15 @@
 (setq use-package-always-ensure t)
 
 
+;;; Get environment variables such as $PATH from the system-wide environment
+;; ========================================
+;; Documentation leads me to belive that this may pick up a different based on
+;; if Emacs is launched from the terminal or as a separate window.
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
+
+
 ;;; Make Emacs aware of the system we are on
 ;;  ========================================
 
@@ -142,9 +151,6 @@
   (let ((path-var (exec-path-from-shell-getenv "PATH")))
     (print (s-split ":" path-var))))
 
-(use-package exec-path-from-shell
-   :config (exec-path-from-shell-initialize))
-
 
 ;; Fullscreen by default, as early as possible. This tiny window is not enough
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -172,8 +178,11 @@
 ;; Golden-ratio allows for dynamic resizing of window sizes.
 (use-package golden-ratio
   :delight " g"
+  :custom
+  (golden-ratio-auto-scale 1)  ;; Auto scale windows
   :config
-  (golden-ratio-mode 1))
+  (golden-ratio-mode 1)
+)
 
 (use-package neotree
   :custom
@@ -189,8 +198,15 @@
 ;;; Python
 ;;;========================================
 
-;; `python.el' provides `python-mode' which is the builtin major-mode for the
-;; Python language.
+;; Remap old major modes to new tree-sitter modes.
+(setq major-mode-remap-alist
+ '((yaml-mode . yaml-ts-mode)
+   (bash-mode . bash-ts-mode)
+   (js2-mode . js-ts-mode)
+   (typescript-mode . typescript-ts-mode)
+   (json-mode . json-ts-mode)
+   (css-mode . css-ts-mode)
+   (python-mode . python-ts-mode)))
 
 (use-package python
   :config
@@ -209,29 +225,35 @@
 
 
 (setq compile-command "just ")
+(setq compilation-auto-jump-to-first-error nil)  ;; Set to 1 if I want to auto-jump to first error.
+(setq use-dialog-box nil)  ;; Answer yes/no questions within Emacs instead of external popup.
 
-;;<OPTIONAL> I use poetry (https://python-poetry.org/) to manage my python environments.
-;; See: https://github.com/galaunay/poetry.el.
-;; There are alternatives like https://github.com/jorgenschaefer/pyvenv.
-;; (use-package poetry
-;;   :ensure t
-;;   :defer t
-;;   :config
-;;   ;; Checks for the correct virtualenv. Better strategy IMO because the default
-;;   ;; one is quite slow.
-;;   (setq poetry-tracking-strategy 'switch-buffer)
-;;   :hook (python-mode . poetry-tracking-mode))
+;; Remove leading '-->' markers from ruff/just output so file links parse.
+(defun vk-strip-compilation-arrows ()
+  "Strip leading '-->' markers from newly inserted compilation output."
+  (when (derived-mode-p 'compilation-mode)
+    (let ((inhibit-read-only t))
+      (save-excursion
+        (save-restriction
+          ;; Only touch the text just inserted by compilation-filter
+          (narrow-to-region compilation-filter-start (point))
+          (goto-char (point-min))
+          ;; Delete any leading spaces, then -->, then any spaces
+          (while (re-search-forward "^[ \t]*-->[ \t]*" nil t)
+            (replace-match "" t t)))))))
 
-(setenv "WORKON_HOME" "~/.venvs/")
+(add-hook 'compilation-filter-hook #'vk-strip-compilation-arrows)
 
-;; (use-package pipenv
-;;   :hook (python-ts-mode . pipenv-mode)
-;;   :init
-;;   (setq
-;;    pipenv-projectile-after-switch-function
-;;    #'pipenv-projectile-after-switch-extended))
-
-
+;; Teach compilation-mode to recognize `file:line:col` (no trailing colon).
+;; This makes those filenames clickable again.
+(with-eval-after-load 'compile
+  ;; A path (no colons), optionally with slashes, then :LINE:COL
+  (add-to-list
+   'compilation-error-regexp-alist-alist
+   '(ruff-file-line-col
+     "^[[:space:]]*\\([^:\n]+\\(?:/[^:\n]+\\)*\\):\\([0-9]+\\):\\([0-9]+\\)\\b"
+     1 2 3))             ;; file, line, column capture groups
+  (add-to-list 'compilation-error-regexp-alist 'ruff-file-line-col))
 
 
 ;; <OPTIONAL> Numpy style docstring for Python.  See:
@@ -246,13 +268,10 @@
   :bind (:map python-mode-map
               ("C-c C-n" . numpydoc-generate)))
 
-
-
-;;; Inline static analysis
-
-;; Enabled inline static analysis
-;; (add-hook 'prog-mode-hook #'flymake-mode)
-
+;; Use PET for Python Executables Tracking aka venv management.
+(use-package pet
+  :config
+  (add-hook 'python-base-mode-hook 'pet-mode -10))
 
 
 
@@ -361,33 +380,12 @@
   :init
   (counsel-projectile-mode))
 
-(use-package magit
-  :custom
-  (magit-refresh-status-buffer nil))  ;; only automatically refresh the current
-				      ;; Magit buffer, but not the status
-				      ;; buffer. The status buffer is only
-				      ;; refreshed automatically if it is the
-				      ;; current buffer.
-(use-package forge :after magit)
-(setq auth-sources '("~/.authinfo"))
-(setq vc-handled-backends '(Git))
-(setq ghub-use-workaround-for-emacs-bug 'force)
-
-(use-package magit-delta
-  :hook (magit-mode . magit-delta-mode))
 
 ;;; Text Editing
 ;;  ============
 
 
-;; Enable ansi color codes in compilation buffers.
-(use-package ansi-color
-  :config
-  (defun my-colorize-compilation-buffer ()
-    (when (eq major-mode 'compilation-mode)
-      (ansi-color-apply-on-region compilation-filter-start (point-max))))
-  :hook (compilation-filter . my-colorize-compilation-buffer))
-
+(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
 (use-package iedit
   :config
@@ -407,7 +405,7 @@
 
 
 ;; Increase default font size.
-(set-face-attribute 'default nil :height 150)
+(set-face-attribute 'default nil :height 120)
 
 
 ;; Justfiles use just-mode.
@@ -490,41 +488,49 @@
   (global-ligature-mode t))
 
 
-;; Remap old major modes to new tree-sitter modes.
-(setq major-mode-remap-alist
- '((yaml-mode . yaml-ts-mode)
-   (bash-mode . bash-ts-mode)
-   (js2-mode . js-ts-mode)
-   (typescript-mode . typescript-ts-mode)
-   (json-mode . json-ts-mode)
-   (css-mode . css-ts-mode)
-   (python-mode . python-ts-mode)))
 
-
-(use-package envrc
-  :config (envrc-global-mode))
+(require 'envrc)
+(add-hook 'change-major-mode-after-body-hook 'envrc-mode)
 
 (require 'eglot)
+
+
+(defun vk-eglot-capf-wrapper (orig-fn &rest args)
+  "Restrict Eglot completion to avoid deleting text after point."
+  (let ((res (apply orig-fn args)))
+    (if (and (consp res) (> (nth 1 res) (point)))
+        (setf (nth 1 res) (point)))
+    res))
+
+(advice-add 'eglot-completion-at-point :around #'vk-eglot-capf-wrapper)
+
+
 (add-hook 'python-mode 'eglot-ensure)
 (add-hook 'python-ts-mode 'eglot-ensure)
 ;; Manuall specify the LSP server that Eglot is supposed to use.
-(add-to-list 'eglot-server-programs
-	     '(python-ts-mode . ("pyright")))
-
+(add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
+(add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
 ;; To remove the lag from eglot.
-(setq eglot-events-buffer-size 0)
-
+(setq eglot-events-buffer-config '(:size 0 :format full))
+(add-to-list 'project-vc-ignores "./.venv/")
 
 (use-package flymake-ruff
   :ensure t
   :hook (eglot-managed-mode . flymake-ruff-load))
-(add-hook 'python-ts-mode-hook 'ruff-format-on-save-mode)
 
-(use-package isortify
-  :ensure t
-  :defer t
-  :hook (python-ts-mode . isortify-mode)
-  :hook (python-ts-mode . python-isort-on-save-mode))
+(use-package flymake-mypy
+  :quelpa (flymake-mypy
+             :fetcher github
+             :repo "com4/flymake-mypy")
+  :hook ((eglot-managed-mode . (lambda ()
+				 (when (derived-mode-p 'python-ts-mode)
+				   (flymake-mypy-enable))))))
+;; (use-package isortify
+;;   :ensure t
+;;   :defer t
+;;   :hook (python-ts-mode . isortify-mode)
+;;   :hook (python-ts-mode . python-isort-on-save-mode))
+
 
 
 ;; GitHub Copilot (using quelpa)
@@ -539,6 +545,44 @@
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
+;; Copilot Chat
+(use-package copilot-chat)
+
+(use-package string-inflection)
+
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
+
+;; AI coding assistant
+;; (use-package aidermacs
+;;   :bind (("C-c a" . aidermacs-transient-menu))
+;;   :custom
+;;   ; See the Configuration section below
+;;   (aidermacs-default-chat-mode 'architect)
+;;   (aidermacs-default-model "sonnet")
+;;   (aidermacs-project-read-only-files '("ENTRY_POINT.md" "README.md" "docs/development/workflows.md" "docs/development/agents.md"))
+;; )
+
+(use-package copilot-chat)
+
+
+;; Agent-Shell is a native Emacs buffer to interact with LLM agents powered by ACP.
+(use-package agent-shell
+    :ensure t
+    :ensure-system-package
+    ;; Add agent installation configs here
+    ((claude . "brew install claude-code")
+     (claude-code-acp . "npm install -g @zed-industries/claude-agent-acp"))
+    :custom
+    (agent-shell-anthropic-authentication
+     (agent-shell-anthropic-make-authentication :login t)))
+
+
 
 ;;; TODO
 ;;  ====
@@ -558,7 +602,7 @@
 ;; use-package (can use :custom and :bind to cleanup stuff).
 
 (setq inhibit-startup-screen t
-      initial-buffer-choice (f-join vk-home "projects" "scoringengine" "justfile")
+      initial-buffer-choice (f-join vk-home "projects" "ScoringEngine_vaibhav-dev" "justfile")
       scroll-step 1
       display-time-default-load-average nil)
 
@@ -570,6 +614,23 @@
                '(pyright "^[[:blank:]]+\\(.+\\):\\([0-9]+\\):\\([0-9]+\\).*$" 1 2 3))
   (add-to-list 'compilation-error-regexp-alist 'pyright))
 
+(use-package ansi-color
+  :hook (compilation-filter . ansi-color-compilation-filter))
+
+(use-package magit
+  :custom
+  (magit-refresh-status-buffer nil))  ;; only automatically refresh the current
+				      ;; Magit buffer, but not the status
+				      ;; buffer. The status buffer is only
+				      ;; refreshed automatically if it is the
+				      ;; current buffer.
+(use-package forge :after magit)
+(setq auth-sources '("~/.authinfo"))
+(setq vc-handled-backends '(Git))
+(setq ghub-use-workaround-for-emacs-bug 'force)
+
+(use-package magit-delta
+  :hook (magit-mode . magit-delta-mode))
 
 
 (message (format "Finished loading %s" (f-this-file)))

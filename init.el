@@ -24,7 +24,6 @@
 ;; Set to true if we want to debug the init. Otherwise set to nil.
 (setq debug-on-error nil)
 
-
 (load-file "~/.emacs.d/init-main.el")  ;; The bare minimum Emacs config I need.
 
 ;; Everything else is optional and should be commented out if the file is

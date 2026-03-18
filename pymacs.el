@@ -97,7 +97,7 @@
 
 ;;; Published variables and functions.
 
-(defvar pymacs-python-command "python"
+(defvar pymacs-python-command "python3.13"
   "Shell command used to start Python interpreter.")
 
 (defvar pymacs-load-path nil
